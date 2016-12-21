@@ -14,6 +14,7 @@ class Walker:
         self.x = 0
         self.y = 0
         self.dir = "N"
+        self.waypoint = []
 
     def rotate(self, direction):
         rotationMatrix = {
@@ -27,13 +28,24 @@ class Walker:
 
     def step(self, ins):
         self.dir = self.rotate(ins[0])
-        pos = [ins[1]*x for x in self.speed[self.dir]]
-        self.x += pos[0]
-        self.y += pos[1]
+        for i in range(ins[1]):
+            directions = [x for x in self.speed[self.dir]]
+            self.x += directions[0]
+            self.y += directions[1]
+            self.waypoint.append([self.x, self.y])
 
     def walk(self, ins):
         instruction = self.readInstruction(ins)
         self.step(instruction)
+
+    def get_distance(self, x = None, y = None):
+        if (x and y):
+            return abs(x) + abs(y)
+        return abs(me.x) + abs(me.y)
+
+    def get_repeated(self):
+        return [x for x in self.waypoint if self.waypoint.count(x) > 1]
+
 
 def get_steps(filename):
     with open(filename, "r") as file:
@@ -47,4 +59,6 @@ steps = get_steps(filename)
 for step in steps:
     me.walk(step)
 
-print(abs(me.x) + abs(me.y))
+print(me.get_distance())
+[x_rep, y_rep] = me.get_repeated()[0]
+print(me.get_distance(x_rep, y_rep))
